@@ -12,14 +12,14 @@ from datetime import date
 
 def populate():
     print("Creating admin user...")
-    admin_user, created = User.objects.get_or_create(username='admin', defaults={'email': 'admin@example.com', 'is_staff': True, 'is_superuser': True})
+    admin_user, _ = User.objects.get_or_create(username='admin', defaults={'email': 'admin@example.com', 'is_staff': True, 'is_superuser': True})
     admin_user.set_password('adminpassword123')
     admin_user.is_staff = True
     admin_user.is_superuser = True
     admin_user.save()
 
     print("Creating student user...")
-    student_user, created = User.objects.get_or_create(username='student1', defaults={'email': 'student1@example.com', 'first_name': 'Arnav', 'last_name': 'Kulkarni'})
+    student_user, _ = User.objects.get_or_create(username='student1', defaults={'email': 'student1@example.com', 'first_name': 'Arnav', 'last_name': 'Kulkarni'})
     student_user.set_password('studentpassword123')
     student_user.first_name = 'Arnav'
     student_user.last_name = 'Kulkarni'
@@ -82,55 +82,58 @@ def populate():
     )
 
     print("Creating questions and choices...")
-    # Question 1 (Lesson 1)
-    q1, _ = Question.objects.get_or_create(
+    # Clear existing questions for clean populate
+    Question.objects.filter(course=course1).delete()
+
+    # Question 1
+    q1 = Question.objects.create(
+        course=course1,
         lesson=lesson1,
-        question_text="What architectural pattern does Django primarily follow?",
-        defaults={'grade': 25}
+        content="What architectural pattern does Django primarily follow?",
+        grade=25
     )
-    q1.courses.add(course1)
-    Choice.objects.get_or_create(question=q1, choice_text="MVT (Model-View-Template)", defaults={'is_correct': True})
-    Choice.objects.get_or_create(question=q1, choice_text="MVC (Model-View-Controller)", defaults={'is_correct': False})
-    Choice.objects.get_or_create(question=q1, choice_text="MVVM (Model-View-ViewModel)", defaults={'is_correct': False})
+    Choice.objects.create(question=q1, content="MVT (Model-View-Template)", is_correct=True)
+    Choice.objects.create(question=q1, content="MVC (Model-View-Controller)", is_correct=False)
+    Choice.objects.create(question=q1, content="MVVM (Model-View-ViewModel)", is_correct=False)
 
-    # Question 2 (Lesson 2)
-    q2, _ = Question.objects.get_or_create(
+    # Question 2
+    q2 = Question.objects.create(
+        course=course1,
         lesson=lesson2,
-        question_text="Which Django command executes database migrations?",
-        defaults={'grade': 25}
+        content="Which Django command executes database migrations?",
+        grade=25
     )
-    q2.courses.add(course1)
-    Choice.objects.get_or_create(question=q2, choice_text="python manage.py makemigrations", defaults={'is_correct': False})
-    Choice.objects.get_or_create(question=q2, choice_text="python manage.py migrate", defaults={'is_correct': True})
-    Choice.objects.get_or_create(question=q2, choice_text="python manage.py runserver", defaults={'is_correct': False})
+    Choice.objects.create(question=q2, content="python manage.py makemigrations", is_correct=False)
+    Choice.objects.create(question=q2, content="python manage.py migrate", is_correct=True)
+    Choice.objects.create(question=q2, content="python manage.py runserver", is_correct=False)
 
-    # Question 3 (Lesson 2)
-    q3, _ = Question.objects.get_or_create(
+    # Question 3
+    q3 = Question.objects.create(
+        course=course1,
         lesson=lesson2,
-        question_text="Which model field represents many-to-many relationships in Django?",
-        defaults={'grade': 25}
+        content="Which model field represents many-to-many relationships in Django?",
+        grade=25
     )
-    q3.courses.add(course1)
-    Choice.objects.get_or_create(question=q3, choice_text="models.ManyToManyField", defaults={'is_correct': True})
-    Choice.objects.get_or_create(question=q3, choice_text="models.ForeignKey", defaults={'is_correct': False})
-    Choice.objects.get_or_create(question=q3, choice_text="models.OneToOneField", defaults={'is_correct': False})
+    Choice.objects.create(question=q3, content="models.ManyToManyField", is_correct=True)
+    Choice.objects.create(question=q3, content="models.ForeignKey", is_correct=False)
+    Choice.objects.create(question=q3, content="models.OneToOneField", is_correct=False)
 
-    # Question 4 (Lesson 3)
-    q4, _ = Question.objects.get_or_create(
+    # Question 4
+    q4 = Question.objects.create(
+        course=course1,
         lesson=lesson3,
-        question_text="Which template tag is essential inside POST forms for CSRF protection?",
-        defaults={'grade': 25}
+        content="Which template tag is essential inside POST forms for CSRF protection?",
+        grade=25
     )
-    q4.courses.add(course1)
-    Choice.objects.get_or_create(question=q4, choice_text="{% csrf_token %}", defaults={'is_correct': True})
-    Choice.objects.get_or_create(question=q4, choice_text="{{ csrf_protection }}", defaults={'is_correct': False})
-    Choice.objects.get_or_create(question=q4, choice_text="{% security_token %}", defaults={'is_correct': False})
+    Choice.objects.create(question=q4, content="{% csrf_token %}", is_correct=True)
+    Choice.objects.create(question=q4, content="{{ csrf_protection }}", is_correct=False)
+    Choice.objects.create(question=q4, content="{% security_token %}", is_correct=False)
 
     print("Enrolling student and creating sample submission...")
     enrollment, _ = Enrollment.objects.get_or_create(user=student_user, course=course1, defaults={'mode': 'honor'})
     enrollment_admin, _ = Enrollment.objects.get_or_create(user=admin_user, course=course1, defaults={'mode': 'honor'})
 
-    # Create submission with 100% score for student1
+    Submission.objects.filter(enrollment=enrollment).delete()
     submission = Submission.objects.create(enrollment=enrollment)
     for q in [q1, q2, q3, q4]:
         correct_choice = q.choice_set.filter(is_correct=True).first()
@@ -142,4 +145,3 @@ def populate():
 
 if __name__ == '__main__':
     populate()
-

@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-md-4 border-right">
                     <h5 class="text-muted">Points Earned</h5>
-                    <h2 class="font-weight-bold text-primary">{{ total_score }} / {{ max_score }}</h2>
+                    <h2 class="font-weight-bold text-primary">{{ total_score }} / {{ possible }}</h2>
                 </div>
                 <div class="col-md-4">
                     <h5 class="text-muted">Passing Requirement</h5>
@@ -62,7 +62,7 @@
                 <div class="card mb-4 border {% if item.is_correct %}border-success{% else %}border-danger{% endif %} shadow-sm">
                     <div class="card-header {% if item.is_correct %}bg-light text-success{% else %}bg-light text-danger{% endif %} d-flex justify-content-between align-items-center">
                         <h5 class="font-weight-bold mb-0 text-dark">
-                            Question {{ forloop.counter }}: {{ item.question.question_text }}
+                            Question {{ forloop.counter }}: {{ item.question.content|default:item.question.question_text }}
                         </h5>
                         <div>
                             {% if item.is_correct %}
@@ -83,7 +83,7 @@
                                     <div>
                                         <i class="fas {% if choice.id in selected_ids %}fa-check-square text-primary{% else %}fa-square text-muted{% endif %} mr-2"></i>
                                         <span class="{% if choice.is_correct %}font-weight-bold text-dark{% endif %}">
-                                            {{ choice.choice_text }}
+                                            {{ choice.content|default:choice.choice_text }}
                                         </span>
                                     </div>
                                     <div>

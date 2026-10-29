@@ -101,19 +101,19 @@ def show_exam_result(request, course_id, submission_id):
     selected_choices = submission.choices.all()
     selected_ids = [c.id for c in selected_choices]
 
-    # Retrieve all questions related to this course (through lessons or direct)
-    questions = Question.objects.filter(lesson__course=course).distinct()
+    # Retrieve all questions related to this course
+    questions = Question.objects.filter(course=course).distinct()
     if not questions.exists():
-        questions = Question.objects.filter(courses=course).distinct()
+        questions = Question.objects.filter(lesson__course=course).distinct()
     if not questions.exists():
         questions = Question.objects.all()
 
     total_score = 0
-    max_score = 0
+    possible = 0
     question_results = []
 
     for question in questions:
-        max_score += question.grade
+        possible += question.grade
         is_correct = question.is_get_score(selected_ids)
         if is_correct:
             total_score += question.grade
@@ -125,7 +125,7 @@ def show_exam_result(request, course_id, submission_id):
             'choices': question.choice_set.all(),
         })
 
-    grade = int((total_score / max_score) * 100) if max_score > 0 else 100
+    grade = int((total_score / possible) * 100) if possible > 0 else 100
     passed = grade >= 60
 
     context = {
@@ -133,7 +133,8 @@ def show_exam_result(request, course_id, submission_id):
         'submission': submission,
         'selected_ids': selected_ids,
         'total_score': total_score,
-        'max_score': max_score,
+        'possible': possible,
+        'max_score': possible,
         'grade': grade,
         'score': grade,
         'passed': passed,

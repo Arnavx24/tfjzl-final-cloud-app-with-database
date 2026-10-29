@@ -81,47 +81,79 @@
                 <form id="exam-form" action="{% url 'onlinecourse:submit' course.id %}" method="post">
                     {% csrf_token %}
 
-                    <!-- Display questions and choices for each lesson -->
-                    {% for lesson in course.lesson_set.all %}
-                        {% if lesson.question_set.all %}
-                            <div class="mb-4">
-                                <h4 class="text-secondary border-bottom pb-2">
-                                    <i class="fas fa-tasks mr-2 text-info"></i>Questions for: {{ lesson.title }}
-                                </h4>
-                                {% for question in lesson.question_set.all %}
-                                    <div class="card my-3 shadow-sm border-left-primary">
-                                        <div class="card-header bg-light">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h5 class="font-weight-bold mb-0 text-dark">
-                                                    Question {{ forloop.counter }}: {{ question.question_text }}
-                                                </h5>
-                                                <span class="badge badge-info badge-pill">{{ question.grade }} Points</span>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <p class="text-muted small mb-2">Select the correct answer(s):</p>
-                                            {% for choice in question.choice_set.all %}
-                                                <div class="form-check custom-control custom-checkbox my-2">
-                                                    <input type="checkbox"
-                                                           class="custom-control-input"
-                                                           id="choice_{{ choice.id }}"
-                                                           name="choice_{{ choice.id }}"
-                                                           value="{{ choice.id }}">
-                                                    <label class="custom-control-label font-weight-normal" for="choice_{{ choice.id }}">
-                                                        {{ choice.choice_text }}
-                                                    </label>
-                                                </div>
-                                            {% empty %}
-                                                <p class="text-muted">No choices available for this question.</p>
-                                            {% endfor %}
+                    <!-- Display questions and choices for the course -->
+                    {% if course.question_set.all %}
+                        <div class="mb-4">
+                            {% for question in course.question_set.all %}
+                                <div class="card my-3 shadow-sm border-left-primary">
+                                    <div class="card-header bg-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="font-weight-bold mb-0 text-dark">
+                                                Question {{ forloop.counter }}: {{ question.content|default:question.question_text }}
+                                            </h5>
+                                            <span class="badge badge-info badge-pill">{{ question.grade }} Points</span>
                                         </div>
                                     </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    {% empty %}
-                        <p class="text-muted">No lessons found.</p>
-                    {% endfor %}
+                                    <div class="card-body">
+                                        <p class="text-muted small mb-2">Select the correct answer(s):</p>
+                                        {% for choice in question.choice_set.all %}
+                                            <div class="form-check custom-control custom-checkbox my-2">
+                                                <input type="checkbox"
+                                                       class="custom-control-input"
+                                                       id="choice_{{ choice.id }}"
+                                                       name="choice_{{ choice.id }}"
+                                                       value="{{ choice.id }}">
+                                                <label class="custom-control-label font-weight-normal" for="choice_{{ choice.id }}">
+                                                    {{ choice.content|default:choice.choice_text }}
+                                                </label>
+                                            </div>
+                                        {% empty %}
+                                            <p class="text-muted">No choices available for this question.</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% for lesson in course.lesson_set.all %}
+                            {% if lesson.question_set.all %}
+                                <div class="mb-4">
+                                    <h4 class="text-secondary border-bottom pb-2">
+                                        <i class="fas fa-tasks mr-2 text-info"></i>Questions for: {{ lesson.title }}
+                                    </h4>
+                                    {% for question in lesson.question_set.all %}
+                                        <div class="card my-3 shadow-sm border-left-primary">
+                                            <div class="card-header bg-light">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h5 class="font-weight-bold mb-0 text-dark">
+                                                        Question {{ forloop.counter }}: {{ question.content|default:question.question_text }}
+                                                    </h5>
+                                                    <span class="badge badge-info badge-pill">{{ question.grade }} Points</span>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <p class="text-muted small mb-2">Select the correct answer(s):</p>
+                                                {% for choice in question.choice_set.all %}
+                                                    <div class="form-check custom-control custom-checkbox my-2">
+                                                        <input type="checkbox"
+                                                               class="custom-control-input"
+                                                               id="choice_{{ choice.id }}"
+                                                               name="choice_{{ choice.id }}"
+                                                               value="{{ choice.id }}">
+                                                        <label class="custom-control-label font-weight-normal" for="choice_{{ choice.id }}">
+                                                            {{ choice.content|default:choice.choice_text }}
+                                                        </label>
+                                                    </div>
+                                                {% empty %}
+                                                    <p class="text-muted">No choices available for this question.</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
 
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-primary btn-lg px-5 shadow">

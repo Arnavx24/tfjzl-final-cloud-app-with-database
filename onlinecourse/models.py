@@ -99,39 +99,43 @@ class Enrollment(models.Model):
 class Question(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, blank=True)
-    question_text = models.CharField(max_length=500)
-    grade = models.IntegerField(default=1)
+    content = models.CharField(max_length=200)
+    grade = models.IntegerField(default=50)
+
+    @property
+    def question_text(self):
+        return self.content
 
     def __str__(self):
-        return f"Question: {self.question_text}"
+        return "Question: " + self.content
 
-    # Method that calculates whether selected choices are all correct choices
     def is_get_score(self, selected_ids):
-        all_answers = set(self.choice_set.filter(is_correct=True).values_list('id', flat=True))
-        selected_ids_set = set(int(i) for i in selected_ids)
-        selected_correct = set(self.choice_set.filter(is_correct=True, id__in=selected_ids_set).values_list('id', flat=True))
-        selected_wrong = set(self.choice_set.filter(is_correct=False, id__in=selected_ids_set).values_list('id', flat=True))
-
-        if all_answers == selected_correct and len(selected_wrong) == 0:
+        all_answers = self.choice_set.filter(is_correct=True).count()
+        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+        if all_answers == selected_correct:
             return True
-        return False
+        else:
+            return False
 
 
 # Choice model
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.TextField()
+    content = models.CharField(max_length=200)
     is_correct = models.BooleanField(default=False)
 
+    @property
+    def choice_text(self):
+        return self.content
+
     def __str__(self):
-        return f"Choice: {self.choice_text} (Correct: {self.is_correct})"
+        return "Choice: " + self.content
 
 
 # Submission model
 class Submission(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
-    date_submitted = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Enrollment {self.enrollment.id}"

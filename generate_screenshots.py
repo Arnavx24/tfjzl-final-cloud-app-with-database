@@ -4,10 +4,7 @@ import time
 import subprocess
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +33,7 @@ def main():
     try:
         driver = webdriver.Chrome(options=chrome_options)
     except Exception as e:
-        print(f"Failed to initialize Chrome with default driver: {e}")
+        print(f"Failed to initialize Chrome: {e}")
         from selenium.webdriver.edge.options import Options as EdgeOptions
         edge_options = EdgeOptions()
         edge_options.add_argument("--headless=new")
@@ -47,10 +44,10 @@ def main():
     try:
         # 1. Take 03-admin-site.png
         print("Navigating to admin login...")
+        driver.set_window_size(1280, 900)
         driver.get("http://127.0.0.1:8000/admin/login/?next=/admin/")
         time.sleep(1)
 
-        # Login to admin
         username_input = driver.find_element(By.NAME, "username")
         password_input = driver.find_element(By.NAME, "password")
         username_input.send_keys("admin")
@@ -58,14 +55,12 @@ def main():
         driver.find_element(By.XPATH, "//input[@type='submit']").click()
         time.sleep(2)
 
-        # Ensure we are on admin main page
         print("Saving 03-admin-site.png...")
         admin_screenshot_path = os.path.join(base_dir, "03-admin-site.png")
         driver.save_screenshot(admin_screenshot_path)
         print(f"Saved: {admin_screenshot_path}")
 
         # 2. Take 07-final.png
-        # Navigate to login to login as student1
         print("Logging in as student1...")
         driver.get("http://127.0.0.1:8000/onlinecourse/login/")
         time.sleep(1)
@@ -77,10 +72,23 @@ def main():
         driver.find_element(By.XPATH, "//button[@type='submit']").click()
         time.sleep(2)
 
-        # Navigate to exam result page
-        print("Navigating to exam result page...")
-        driver.get("http://127.0.0.1:8000/onlinecourse/course/1/submission/1/result/")
+        # Dynamically query latest submission id
+        import django
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
+        django.setup()
+        from onlinecourse.models import Submission
+        latest_sub = Submission.objects.order_by('-id').first()
+        sub_id = latest_sub.id if latest_sub else 1
+
+        print(f"Navigating to exam result page for submission {sub_id}...")
+        driver.get(f"http://127.0.0.1:8000/onlinecourse/course/1/submission/{sub_id}/result/")
         time.sleep(2)
+
+        # Set window size to capture FULL page from top to bottom
+        total_height = driver.execute_script("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);")
+        print(f"Full page height: {total_height}")
+        driver.set_window_size(1280, max(total_height + 150, 1800))
+        time.sleep(1)
 
         final_screenshot_path = os.path.join(base_dir, "07-final.png")
         driver.save_screenshot(final_screenshot_path)
@@ -94,4 +102,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
