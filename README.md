@@ -54,8 +54,8 @@ This Django application extends an online course platform with interactive exam 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Arnavx24/online-course-final-project.git
-   cd online-course-final-project
+   git clone https://github.com/Arnavx24/tfjzl-final-cloud-app-with-database.git
+   cd tfjzl-final-cloud-app-with-database
    ```
 
 2. **Create and activate a virtual environment:**
@@ -95,4 +95,3 @@ This Django application extends an online course platform with interactive exam 
 - **Student User (`/onlinecourse/login/`):**
   - Username: `student1`
   - Password: `studentpassword123`
-

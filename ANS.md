@@ -1,41 +1,29 @@
 # IBM Coursera Django Final Project - Course Assessment Feature
 
 ## Repository Information
-- **Repository URL:** https://github.com/Arnavx24/online-course-final-project
-- **Alternative Repo URL:** https://github.com/Arnavx24/django-online-course-assessment
+- **Repository URL:** https://github.com/Arnavx24/tfjzl-final-cloud-app-with-database
 
 ---
 
 ### Q1:
-https://github.com/Arnavx24/online-course-final-project/blob/main/onlinecourse/models.py
-
-*(Alternative: https://github.com/Arnavx24/django-online-course-assessment/blob/main/onlinecourse/models.py)*
+https://github.com/Arnavx24/tfjzl-final-cloud-app-with-database/blob/main/onlinecourse/models.py
 
 ---
 
 ### Q2:
-https://github.com/Arnavx24/online-course-final-project/blob/main/onlinecourse/admin.py
-
-*(Alternative: https://github.com/Arnavx24/django-online-course-assessment/blob/main/onlinecourse/admin.py)*
+https://github.com/Arnavx24/tfjzl-final-cloud-app-with-database/blob/main/onlinecourse/admin.py
 
 ---
 
 ### Q4:
-https://github.com/Arnavx24/online-course-final-project/blob/main/onlinecourse/templates/onlinecourse/course_details_bootstrap.html
-
-*(Alternative: https://github.com/Arnavx24/django-online-course-assessment/blob/main/onlinecourse/templates/onlinecourse/course_details_bootstrap.html)*
+https://github.com/Arnavx24/tfjzl-final-cloud-app-with-database/blob/main/onlinecourse/templates/onlinecourse/course_details_bootstrap.html
 
 ---
 
 ### Q5:
-https://github.com/Arnavx24/online-course-final-project/blob/main/onlinecourse/views.py
-
-*(Alternative: https://github.com/Arnavx24/django-online-course-assessment/blob/main/onlinecourse/views.py)*
+https://github.com/Arnavx24/tfjzl-final-cloud-app-with-database/blob/main/onlinecourse/views.py
 
 ---
 
 ### Q6:
-https://github.com/Arnavx24/online-course-final-project/blob/main/onlinecourse/urls.py
-
-*(Alternative: https://github.com/Arnavx24/django-online-course-assessment/blob/main/onlinecourse/urls.py)*
-
+https://github.com/Arnavx24/tfjzl-final-cloud-app-with-database/blob/main/onlinecourse/urls.py
