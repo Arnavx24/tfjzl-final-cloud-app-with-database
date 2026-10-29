@@ -1,0 +1,141 @@
+{% extends 'onlinecourse/base.html' %}
+
+{% block title %}{{ course.name }} - Course Details{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Course Header Card -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h1 class="display-5 font-weight-bold text-primary">{{ course.name }}</h1>
+                <span class="badge badge-pill badge-primary px-3 py-2">
+                    <i class="fas fa-users mr-1"></i>Enrolled: {{ course.total_enrollment }}
+                </span>
+            </div>
+            <p class="lead text-secondary">{{ course.description }}</p>
+
+            <div class="mt-3">
+                {% if not user.is_authenticated %}
+                    <div class="alert alert-warning">
+                        Please <a href="{% url 'onlinecourse:login' %}" class="alert-link">login</a> to enroll and take the course assessment.
+                    </div>
+                {% elif not is_enrolled %}
+                    <form action="{% url 'onlinecourse:enroll' course.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-plus-circle mr-1"></i> Enroll in this Course
+                        </button>
+                    </form>
+                {% else %}
+                    <span class="badge badge-success px-3 py-2 font-size-1rem">
+                        <i class="fas fa-check-circle mr-1"></i> You are enrolled in this course!
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Lessons Section -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom py-3">
+            <h3 class="font-weight-bold mb-0 text-dark">
+                <i class="fas fa-book-open text-primary mr-2"></i>Course Lessons
+            </h3>
+        </div>
+        <div class="card-body">
+            {% if course.lesson_set.all %}
+                <div class="accordion" id="lessonsAccordion">
+                    {% for lesson in course.lesson_set.all %}
+                        <div class="card mb-3 border">
+                            <div class="card-header bg-light" id="headingLesson{{ lesson.id }}">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link font-weight-bold text-dark text-decoration-none" type="button" data-toggle="collapse" data-target="#collapseLesson{{ lesson.id }}">
+                                        <i class="fas fa-file-alt text-primary mr-2"></i>Lesson {{ forloop.counter }}: {{ lesson.title }}
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseLesson{{ lesson.id }}" class="collapse {% if forloop.first %}show{% endif %}" data-parent="#lessonsAccordion">
+                                <div class="card-body">
+                                    <p class="text-muted">{{ lesson.content }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No lessons available for this course yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Exam / Assessment Section -->
+    <div class="card mb-5 border-0 shadow-sm">
+        <div class="card-header bg-primary text-white py-3">
+            <h3 class="font-weight-bold mb-0">
+                <i class="fas fa-clipboard-check mr-2"></i>Course Exam & Assessment
+            </h3>
+        </div>
+        <div class="card-body p-4">
+            {% if user.is_authenticated %}
+                <form id="exam-form" action="{% url 'onlinecourse:submit' course.id %}" method="post">
+                    {% csrf_token %}
+
+                    <!-- Display questions and choices for each lesson -->
+                    {% for lesson in course.lesson_set.all %}
+                        {% if lesson.question_set.all %}
+                            <div class="mb-4">
+                                <h4 class="text-secondary border-bottom pb-2">
+                                    <i class="fas fa-tasks mr-2 text-info"></i>Questions for: {{ lesson.title }}
+                                </h4>
+                                {% for question in lesson.question_set.all %}
+                                    <div class="card my-3 shadow-sm border-left-primary">
+                                        <div class="card-header bg-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="font-weight-bold mb-0 text-dark">
+                                                    Question {{ forloop.counter }}: {{ question.question_text }}
+                                                </h5>
+                                                <span class="badge badge-info badge-pill">{{ question.grade }} Points</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="text-muted small mb-2">Select the correct answer(s):</p>
+                                            {% for choice in question.choice_set.all %}
+                                                <div class="form-check custom-control custom-checkbox my-2">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           id="choice_{{ choice.id }}"
+                                                           name="choice_{{ choice.id }}"
+                                                           value="{{ choice.id }}">
+                                                    <label class="custom-control-label font-weight-normal" for="choice_{{ choice.id }}">
+                                                        {{ choice.choice_text }}
+                                                    </label>
+                                                </div>
+                                            {% empty %}
+                                                <p class="text-muted">No choices available for this question.</p>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <p class="text-muted">No lessons found.</p>
+                    {% endfor %}
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+                            <i class="fas fa-paper-plane mr-2"></i>Submit Exam
+                        </button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="alert alert-info text-center py-4">
+                    <h5><i class="fas fa-info-circle mr-2"></i>Please log in to take this course exam.</h5>
+                    <a href="{% url 'onlinecourse:login' %}" class="btn btn-primary mt-2">Log In Now</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

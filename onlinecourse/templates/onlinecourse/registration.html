@@ -1,0 +1,42 @@
+{% extends 'onlinecourse/base.html' %}
+
+{% block title %}Sign Up - Online Course{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white text-center py-3">
+                <h4 class="font-weight-bold mb-0"><i class="fas fa-user-plus mr-2"></i>Create an Account</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" action="{% url 'onlinecourse:registration' %}">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}"><b>{{ field.label }}</b></label>
+                            <input type="{{ field.field.widget.input_type|default:'text' }}"
+                                   name="{{ field.html_name }}"
+                                   class="form-control"
+                                   id="{{ field.id_for_label }}"
+                                   {% if field.field.required %}required{% endif %}>
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success btn-block btn-lg mt-4">
+                        Register Now
+                    </button>
+                </form>
+                <div class="text-center mt-3">
+                    <p class="text-muted">Already have an account? <a href="{% url 'onlinecourse:login' %}">Sign in here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
