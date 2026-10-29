@@ -38,3 +38,4 @@ https://github.com/Arnavx24/online-course-final-project/blob/main/onlinecourse/v
 https://github.com/Arnavx24/online-course-final-project/blob/main/onlinecourse/urls.py
 
 *(Alternative: https://github.com/Arnavx24/django-online-course-assessment/blob/main/onlinecourse/urls.py)*
+

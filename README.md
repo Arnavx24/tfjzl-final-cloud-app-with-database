@@ -95,3 +95,4 @@ This Django application extends an online course platform with interactive exam 
 - **Student User (`/onlinecourse/login/`):**
   - Username: `student1`
   - Password: `studentpassword123`
+
